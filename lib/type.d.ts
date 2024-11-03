@@ -1,9 +1,15 @@
+interface ITranscript  {
+  transcripts: {
+    text: string;
+  start: number;
+  end: number;
+  }
+}
+
 export type InitialStateType = {
   playing: boolean;
   muted: boolean;
+  seekTo: number | null;
   currentTime: number;
-  transcript: {
-    text: string;
-    timestamp: number;
-  }[];
+  collections: transcripts[]
 };
