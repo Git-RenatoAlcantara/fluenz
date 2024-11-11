@@ -108,6 +108,7 @@ export function VideoEditor({
                   <div className="h-28 w-full flex">
                     <div className="p-2 h-full flex flex-col justify-between">
                       <input
+                        onClick={() => onInputClick(sub)}
                         onChange={(event) =>
                           changeInput(0, index, "start", event.target.value)
                         }
@@ -117,6 +118,7 @@ export function VideoEditor({
                         type="number"
                       />
                       <input
+                        onClick={() => onInputClick(sub)}
                         onChange={(event) =>
                           changeInput(0, index, "end", event.target.value)
                         }
@@ -163,9 +165,9 @@ export function VideoEditor({
       </div>
       <div className="col-span-5 space-y-5 relative">
         <div className="w-[700px] relative ">
-          <div className="absolute w-full bottom-8">
+          {/* <div className="absolute w-full bottom-8">
             <Transcription isGame={isGame} />
-          </div>
+          </div> */}
           <div className="w-full">
             <VideoPlayback
               isEditor={isEditor}

@@ -59,8 +59,7 @@ export function VideoPlayback({
 
   useEffect(() => {
     if (playerRef.current) {
-      const seekTo = initialState.seekTo;
-      console.log(seekTo);
+      const seekTo = initialState.seekTo
       playerRef.current.seekTo(seekTo || 0.0);
     }
   }, [initialState.seekTo]);
@@ -80,7 +79,7 @@ export function VideoPlayback({
             width={width}
             height={height}
           />
-          <div className="absolute w-full bottom-8">
+          <div className="absolute w-full bottom-0">
             <Transcription isGame={isGame} />
           </div>
         </div>

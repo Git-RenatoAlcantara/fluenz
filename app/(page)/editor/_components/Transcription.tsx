@@ -57,7 +57,7 @@ export function Transcription({ isGame }: { isGame: boolean }) {
           <HoverCardTrigger>
             <span
               onClick={() => onTranscriptionClick(t)}
-              className="transcription text-white text-2xl px-1 cursor-pointer hover:bg-blue-400"
+              className="transcription text-white w-[900px] break-normal  text-2xl px-1 cursor-pointer hover:bg-blue-400"
             >
               {t}
             </span>
@@ -66,7 +66,7 @@ export function Transcription({ isGame }: { isGame: boolean }) {
             <div className="flex flex-col">
               <h4 className="text-md text-center font-semibold">{t}</h4>
               <div className="w-full h-1 border-b-1 border-gray-200" />
-              <p className="text-sm">
+              <p className="text-sm ">
                 The React Framework – created and maintained by @vercel.
               </p>
             </div>
@@ -78,16 +78,16 @@ export function Transcription({ isGame }: { isGame: boolean }) {
   };
   return (
     <>
-      <div
-        ref={transcriptionContainerRef}
-        className="w-[700px]  flex px-1 items-center justify-center"
-      >
-        {currentSubt?.text && (
-          <div className="bg-zinc-950/70 rounded w-full text-wrap flex justify-center items-center h-14">
+      <div className="bg-zinc-950/70 flex justify-center  w-[900px] rounded">
+        <p className=" text-2xl p-5 w-[600px] text-center">
+          {currentSubt?.text}
+        </p>
+      </div>
+      {/* {currentSubt?.text && (
+          <div className="bg-zinc-950/70  w-[900px] rounded   flex justify-center items-center h-14">
             {transcriptFormat(currentSubt?.text)}
           </div>
-        )}
-      </div>
+        )} */}
     </>
   );
 }
