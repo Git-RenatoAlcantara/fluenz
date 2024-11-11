@@ -1,63 +1,96 @@
 import { useVideoPlayer } from "@/app/store/useVideoPlayer";
-import { InitialStateType } from "@/lib/type";
-import { formatVideoTime } from "@/lib/utils";
+import { InitialStateType, ITranscript } from "@/lib/type";
+import { cn, formatVideoTime } from "@/lib/utils";
 import React, { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
+import { Transcription } from "../editor/_components/Transcription";
 
-export function VideoPlayback() {
+export function VideoPlayback({
+  isGame,
+  isEditor,
+  url,
+  height,
+  width,
+  className,
+}: {
+  isGame: boolean;
+  isEditor: boolean;
+  url?: string;
+  height: string;
+  width: string;
+  className: string;
+}) {
   const [audio, setAudio] = useState<boolean>(true);
 
   const playerRef = useRef<ReactPlayer>(null);
-  const initialState = useVideoPlayer((state) => state.initialState);
+
   const update = useVideoPlayer((state) => state.update);
+  const initialState = useVideoPlayer((state) => state.initialState);
+  const [transcript, collection] = useVideoPlayer.getState().getTimestamp();
 
   useEffect(() => {
-    if (playerRef.current) {
+    const video = playerRef.current;
+
+    if (video) {
       const frame = playerRef.current.getInternalPlayer();
       if (frame) {
         const iframe = frame.g;
         iframe.style.borderRadius = "8px";
       }
+      if (isGame && transcript) {
+        playerRef.current.seekTo(transcript.start);
+        const time = setTimeout(() => {
+          update({ playing: true });
+        }, 500);
+        return () => clearTimeout(time);
+      }
     }
   }, [playerRef.current]);
 
   useEffect(() => {
-    if (initialState.playing) {
-      setAudio(false);
-    }
-  }, [initialState.playing]);
-
-  useEffect(() => {
-    console.log("seekToState", initialState.seekTo);
-    const video = playerRef.current;
-    const seekTo = initialState.seekTo;
-    if (video) {
-      if (seekTo !== null) {
-        video.seekTo(seekTo);
-        update({ seekTo: null });
+    if (isGame && transcript) {
+      const currentTime = initialState.currentTime;
+      if (parseFloat(currentTime.toFixed(2)) > transcript.end) {
+        console.log("==== PAUSED =====");
+        update({ playing: false });
       }
     }
-  }, [initialState.seekTo, initialState]);
+  }, [initialState.currentTime]);
 
+  useEffect(() => {
+    if (playerRef.current) {
+      const seekTo = initialState.seekTo;
+      console.log(seekTo);
+      playerRef.current.seekTo(seekTo || 0.0);
+    }
+  }, [initialState.seekTo]);
   return (
-    <div>
+    <div className={cn(className)}>
       <div className="shadow-lg rounded">
-        <div className="p-0.5">
+        <div className="p-0.5 relative">
           <ReactPlayer
             ref={playerRef}
             playing={initialState.playing}
             onProgress={(progress) =>
               update({ currentTime: progress.playedSeconds })
             }
-            controls={true}
+            controls={false}
             muted={audio}
-            url={initialState.collections[0].url}
-            width={"100%"}
-            height={"420px"}
+            url={collection?.url || url}
+            width={width}
+            height={height}
           />
+          <div className="absolute w-full bottom-8">
+            <Transcription isGame={isGame} />
+          </div>
         </div>
       </div>
-      <p className="w-full text-white text-center text-lg font-bold">{formatVideoTime(initialState.currentTime)}</p>
+      {isGame ||
+        (isEditor && (
+          <p className="w-full text-white text-center text-lg font-bold">
+            {formatVideoTime(initialState.currentTime)}
+          </p>
+        ))}
     </div>
   );
 }

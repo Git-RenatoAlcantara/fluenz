@@ -17,12 +17,12 @@ import {
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
+    title: "Dashboard",
+    url: "/dashboard",
     icon: Home,
   },
   {
-    title: "Inbox",
+    title: "Trailer Game",
     url: "#",
     icon: Inbox,
   },

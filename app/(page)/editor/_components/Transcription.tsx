@@ -5,28 +5,43 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { ICollection, InitialStateType } from "@/lib/type";
 
-export function Transcription() {
-  let initialState = useVideoPlayer((state) => state.initialState);
+export function Transcription({ isGame }: { isGame: boolean }) {
+  let initialState: InitialStateType = useVideoPlayer(
+    (state) => state.initialState
+  );
   const update = useVideoPlayer((state) => state.update);
 
   const [currentSubt, setCurrentSub] = useState<any>();
   const transcriptionContainerRef = useRef(null);
 
   useEffect(() => {
-    const currentTime = parseFloat(String(initialState.currentTime)).toFixed(2);
-    const transcript = initialState.collections[0].transcripts;
+    if (initialState.collections && initialState.collections.length) {
+      const currentTime = parseFloat(String(initialState.currentTime)).toFixed(
+        2
+      );
+      const transcript = initialState.collections[0].transcripts;
 
-    const subtitle = transcript.find(
-      (step) =>
-        parseFloat(currentTime) > step.start &&
-        parseFloat(currentTime) < step.end
-    );
+      const subtitle = transcript.find(
+        (step) =>
+          parseFloat(currentTime) > step.start &&
+          parseFloat(currentTime) < step.end
+      );
 
-    if (subtitle) {
-      setCurrentSub(subtitle);
-    } else {
-      setCurrentSub("");
+      if (isGame && subtitle) {
+        if (initialState.playing) {
+          setCurrentSub(subtitle);
+        } else {
+          setCurrentSub("");
+        }
+      } else {
+        if (subtitle) {
+          setCurrentSub(subtitle);
+        } else {
+          setCurrentSub("");
+        }
+      }
     }
   }, [transcriptionContainerRef, initialState.currentTime]);
 
@@ -65,10 +80,10 @@ export function Transcription() {
     <>
       <div
         ref={transcriptionContainerRef}
-        className="w-full  flex px-1 items-center justify-center"
+        className="w-[700px]  flex px-1 items-center justify-center"
       >
         {currentSubt?.text && (
-          <div className="bg-zinc-950/70 rounded w-full flex justify-center items-center h-14">
+          <div className="bg-zinc-950/70 rounded w-full text-wrap flex justify-center items-center h-14">
             {transcriptFormat(currentSubt?.text)}
           </div>
         )}

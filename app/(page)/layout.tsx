@@ -1,7 +1,7 @@
 import React from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "./_components/app-sidebar";
-import { AppBar } from "./_components/app-bar";
+import { AppSidebar } from "./editor/_components/app-sidebar";
+import { AppBar } from "./editor/_components/app-bar";
 
 function RootLayout({ children }: { children: React.ReactNode }) {
   return (

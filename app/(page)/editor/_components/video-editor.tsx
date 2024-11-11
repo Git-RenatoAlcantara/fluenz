@@ -7,9 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useVideoPlayer } from "@/app/store/useVideoPlayer";
 import { Transcription } from "./Transcription";
-import { VideoPlayback } from "./video-playback";
+import { VideoPlayback } from "../../_components/video-playback";
 
-export function VideoEditor() {
+export function VideoEditor({
+  isGame = false,
+  isEditor = false,
+}: {
+  isGame?: boolean;
+  isEditor: boolean;
+}) {
   let initialState = useVideoPlayer((state) => state.initialState);
   const changeInput = useVideoPlayer((state) => state.changeInput);
   const insertSubtitleContainer = useVideoPlayer(
@@ -18,6 +24,7 @@ export function VideoEditor() {
 
   const update = useVideoPlayer.getState().update;
   const [modalOpen, setModalOpen] = useState(false);
+  const [index, setIndex] = useState(null);
 
   const stopIcon = () => {
     return (
@@ -87,20 +94,89 @@ export function VideoEditor() {
     });
   };
 
+  const renderPlayer = () => {
+    return <></>;
+  };
   return (
     <div className="grid grid-cols-12 gap-3 ">
-      <div className="col-span-3">1</div>
-      <div className="col-span-6 space-y-5">
-        <div className="w-full relative">
+      <div className="col-span-6">
+        <ScrollArea className="w-full h-[460px] p-5 rounded-md ">
+          <div className="w-full h-full space-y-2 rounded-md ">
+            <>
+              {initialState.collections[0].transcripts.map((sub, index) => (
+                <div className="w-full h-36 gap-2 flex bg-purple-500 rounded relative">
+                  <div className="h-28 w-full flex">
+                    <div className="p-2 h-full flex flex-col justify-between">
+                      <input
+                        onChange={(event) =>
+                          changeInput(0, index, "start", event.target.value)
+                        }
+                        step={1.0}
+                        className="bg-zinc-900 text-white rounded-md"
+                        value={sub.start}
+                        type="number"
+                      />
+                      <input
+                        onChange={(event) =>
+                          changeInput(0, index, "end", event.target.value)
+                        }
+                        className="bg-zinc-900 text-white rounded-md"
+                        value={sub.end}
+                        type="number"
+                      />
+                    </div>
+                    <div className="p-2 w-full ">
+                      <textarea
+                        onClick={() => onInputClick(sub)}
+                        className="w-full h-full border-0  text-white text-md font-medium  bg-zinc-900 rounded-md "
+                        value={sub.text}
+                        onChange={(event) =>
+                          changeInput(0, index, "text", event.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => insertSubtitleContainer(0, index)}
+                    className="absolute h-8 w-5 z-10 bg-yellow-500 rounded-full -bottom-4 right-5"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  </Button>
+                </div>
+              ))}
+            </>
+          </div>
+        </ScrollArea>
+      </div>
+      <div className="col-span-5 space-y-5 relative">
+        <div className="w-[700px] relative ">
           <div className="absolute w-full bottom-8">
-            <Transcription />
+            <Transcription isGame={isGame} />
           </div>
           <div className="w-full">
-            <VideoPlayback />
+            <VideoPlayback
+              isEditor={isEditor}
+              className="absolute z-0"
+              isGame={isGame}
+              height="480px"
+              width="800px"
+            />
           </div>
         </div>
-
-        <div className="flex justify-center gap-2">
+        <div className="flex  w-full justify-center gap-2 absolute top-[510px]">
           <Button
             variant={"ghost"}
             className="bg-purple-500 hover:bg-purple-600"
@@ -123,66 +199,7 @@ export function VideoEditor() {
             {restartIcon()}
           </Button>
         </div>
-        <ScrollArea className="w-full h-[460px] p-5 rounded-md">
-          <div className="w-full h-full space-y-2 rounded-md ">
-            {initialState.collections[0].transcripts.map((sub, index) => (
-              <div className="w-full h-36 gap-2 flex bg-purple-500 rounded relative">
-                <div className="h-28 w-full flex">
-                  <div className="p-2 h-full flex flex-col justify-between">
-                    <input
-                      onChange={(event) =>
-                        changeInput(0, index, "start", event.target.value)
-                      }
-                      step={1.0}
-                      className="bg-zinc-900 text-white rounded-md"
-                      value={sub.start}
-                      type="number"
-                    />
-                    <input
-                      onChange={(event) =>
-                        changeInput(0, index, "end", event.target.value)
-                      }
-                      className="bg-zinc-900 text-white rounded-md"
-                      value={sub.end}
-                      type="number"
-                    />
-                  </div>
-                  <div className="p-2 w-full ">
-                    <textarea
-                      onClick={() => onInputClick(sub)}
-                      className="w-full h-full border-0  text-white text-md font-medium  bg-zinc-900 rounded-md "
-                      value={sub.text}
-                      onChange={(event) =>
-                        changeInput(0, index, "text", event.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-                <Button
-                  onClick={() => insertSubtitleContainer(index)}
-                  className="absolute h-8 w-5 z-10 bg-yellow-500 rounded-full -bottom-4 right-5"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                  </svg>
-                </Button>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
       </div>
-      <div className="col-span-3">3</div>
     </div>
   );
 }

@@ -1,9 +1,13 @@
 interface ITranscript  {
-  transcripts: {
-    text: string;
+  text: string;
   start: number;
   end: number;
-  }
+}
+
+interface ICollection {
+  id: number;
+  url: string;
+  transcripts: ITranscript[];
 }
 
 export type InitialStateType = {
@@ -11,5 +15,5 @@ export type InitialStateType = {
   muted: boolean;
   seekTo: number | null;
   currentTime: number;
-  collections: transcripts[]
+  collections: ICollection[] | []
 };

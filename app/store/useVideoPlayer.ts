@@ -1,11 +1,20 @@
-import { InitialStateType } from "@/lib/type";
+import { ICollection, InitialStateType, ITranscript } from "@/lib/type";
 import { create } from "zustand";
 
 type UpdateType = {
-  [_: string]: string | number | boolean | null;
+  [_: string]: string | number | boolean | ICollection[] | null;
 };
+
+export const getLocalStorage = (): ICollection[] | undefined => {
+  const storage = localStorage.getItem("collections");
+  if (storage) {
+    return JSON.parse(storage);
+  }
+};
+
 interface InitialStateStore {
   initialState: InitialStateType;
+  getTimestamp: () => [ITranscript, ICollection] | [];
   update: (props: UpdateType) => void;
   changeInput: (
     collectionId: number,
@@ -14,6 +23,13 @@ interface InitialStateStore {
     value: string | number
   ) => void;
   insertSubtitleContainer: (collectionId: number, index: number) => void;
+  storage: ICollection[] | [];
+  updateStorage: (
+    insert: boolean,
+    collection: ICollection | ICollection[]
+  ) => void;
+  save: (collections?: ICollection[]) => void;
+  load: () => void;
 }
 
 function getRandomInt(min: number, max: number) {
@@ -28,38 +44,25 @@ export const useVideoPlayer = create<InitialStateStore>((set, get) => ({
     muted: true,
     currentTime: 0,
     seekTo: null,
-    collections: [
-      {
-        id: 0,
-        url: "https://www.youtube.com/watch?v=j6ucGt_Xp14",
-        transcripts: [
-          { text: "something happened to me", start: 0.0, end: 1.3 },
-          {
-            text: "But you wouldn't believe me if I told you.",
-            start: 2.0,
-            end: 4.5,
-          },
-          { text: "Ho, here we go.", start: 7.0, end: 8.5 },
-          { text: "Wait for this", start: 8.8, end: 9.8 },
-          {
-            text: "To my extraordinary wife, Daniela.",
-            start: 10.1,
-            end: 12.5,
-          },
-          { text: "I do not deserve you", start: 12.6, end: 13.5 },
-          { text: "That's true.", start: 13.6, end: 15.0 },
-          { text: "A man of science", start: 18.5, end: 20.5 },
-          {
-            text: "he's married to the woman of his dreams",
-            start: 20.8,
-            end: 23.5,
-          },
-          { text: "and they have a good life.", start: 23.9, end: 24.8 },
-        ],
-      },
-    ],
+    collections: [],
   },
 
+  getTimestamp: () => {
+    
+    const collections = get().initialState.collections;
+    if (collections && collections.length) {
+      const randomCollectionPostition = getRandomInt(0, collections.length - 1);
+      const collectionRandom: ICollection =
+        collections[randomCollectionPostition];
+      const transcripts = collectionRandom.transcripts;
+      const randomTranscriptPosition = getRandomInt(0, transcripts.length - 1);
+      const transcriptRandom: ITranscript =
+        transcripts[randomTranscriptPosition];
+
+      return [transcriptRandom, collectionRandom];
+    }
+    return [];
+  },
   update: (props: UpdateType) => {
     set((state) => ({
       initialState: {
@@ -79,7 +82,7 @@ export const useVideoPlayer = create<InitialStateStore>((set, get) => ({
       // Localiza a coleção correta pelo índice
       const findCollection = state.initialState.collections[collectionIndex];
 
-      console.log("findCollection", findCollection)
+      console.log("findCollection", findCollection);
       if (!findCollection) return state; // Se não encontrar a coleção, retorna o estado atual
 
       // Faz uma cópia das transcrições e atualiza a transcrição no índice correto
@@ -90,7 +93,7 @@ export const useVideoPlayer = create<InitialStateStore>((set, get) => ({
         [key]: value, // Atualiza apenas a chave especificada
       };
 
-      console.log("updatedTranscripts", updatedTranscripts)
+      console.log("updatedTranscripts", updatedTranscripts);
 
       // Atualiza a coleção com as transcrições modificadas
       const updatedCollections = [...state.initialState.collections];
@@ -141,5 +144,42 @@ export const useVideoPlayer = create<InitialStateStore>((set, get) => ({
         },
       };
     });
+  },
+  storage: [],
+  updateStorage: (insert: boolean, collection: ICollection | ICollection[]) => {
+    console.log(collection);
+    const storage = localStorage.getItem("collections");
+    console.log(storage);
+    if (insert) {
+      if (storage) {
+        const collections: ICollection[] = JSON.parse(storage);
+        const storageList: ICollection[] = get().storage;
+        storageList.push(collection as ICollection);
+        set({ storage: [...storageList] });
+        get().save(storageList);
+      }
+    } else {
+      console.log("remover", collection);
+      set({ storage: [...(collection as ICollection[])] });
+      get().save();
+    }
+  },
+  save: (storageList?: ICollection[]) => {
+    //const initCollections = get().initialState.collections;
+    const storage = get().storage;
+    if (storageList && storageList.length) {
+      localStorage.setItem("collections", JSON.stringify(storageList));
+    } else {
+      localStorage.setItem("collections", JSON.stringify(storage));
+    }
+  },
+
+  load: () => {
+    const storage = localStorage.getItem("collections");
+    console.log(storage);
+    if (storage) {
+      const collections = JSON.parse(storage);
+      set(() => ({ storage: collections }));
+    }
   },
 }));
