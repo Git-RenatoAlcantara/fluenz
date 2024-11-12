@@ -165,9 +165,6 @@ export function VideoEditor({
       </div>
       <div className="col-span-5 space-y-5 relative">
         <div className="w-[700px] relative ">
-          {/* <div className="absolute w-full bottom-8">
-            <Transcription isGame={isGame} />
-          </div> */}
           <div className="w-full">
             <VideoPlayback
               isEditor={isEditor}
