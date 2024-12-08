@@ -1,5 +1,18 @@
 import { clsx, type ClassValue } from "clsx"
+import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge"
+
+export function getDateInMonth(year = dayjs().year(), month = dayjs().month()){
+  const startDate = dayjs().year(year).month(month).date(1);
+  const endDate = startDate.endOf('month');
+  const datesArray = [];
+
+  for (let i = startDate.date(); i <= endDate.date(); i++){
+    datesArray.push(startDate.date(i).format('DD-MM-YYYY'));
+  }
+
+  return datesArray;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

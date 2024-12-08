@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 const flowbite = require("flowbite-react/tailwind");
+import plugin from "tailwindcss/plugin";
 
 const config: Config = {
     darkMode: ["class"],
@@ -93,6 +94,18 @@ const config: Config = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate"), flowbite.plugin()],
+  plugins: [require("tailwindcss-animate"), flowbite.plugin(), 
+    plugin(function({ addUtilities }) {
+    const newUtilities = {
+      '.backface-visible': {
+        'backface-visibility': 'visible',
+      },
+      '.backface-hidden': {
+        'backface-visibility': 'hidden',
+      },
+    }
+
+    addUtilities(newUtilities);
+  }),],
 };
 export default config;

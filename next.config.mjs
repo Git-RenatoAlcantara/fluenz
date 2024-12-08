@@ -7,8 +7,23 @@ const nextConfig = {
     // Will be available on both server and client
     staticFolder: "/static",
   },
+  headers: () => [
+    {
+      source: '/',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'no-store',
+        },
+      ],
+    },
+  ],
   images: {
-    domains: ["imgcdn.stablediffusionweb.com"],
+    domains: [
+      "imgcdn.stablediffusionweb.com",
+      "images.unsplash.com"
+    ],
+    unoptimized: true
   },
   webpack(config, options) {
     // Further custom configuration here
