@@ -1,7 +1,7 @@
 'use client'
 
-import Header from "@/components/Header"
-import Sidebar from "@/components/sidebar"
+import Header from "@/components/global/Header"
+import Sidebar from "@/components/global/sidebar"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { usePathname } from 'next/navigation'
 import React from "react"

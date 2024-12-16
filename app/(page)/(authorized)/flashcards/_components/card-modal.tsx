@@ -14,7 +14,7 @@ import { saveCard } from "../_actions/saveCard"
 import { useToast } from "@/hooks/use-toast"
 
 
-export const NewCardModal = () => {
+export const CardModal = () => {
     const queryClient = useQueryClient()
     const { toast } = useToast()
     

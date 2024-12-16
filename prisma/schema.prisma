@@ -14,6 +14,7 @@ datasource db {
 }
 
 
+
 model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
@@ -21,6 +22,7 @@ model User {
   password_hash String
   videos Video[]
   flashcard Flashcard[]
+  quizz Quizz[]
   createdAt DateTime @default(now())
   updatedAt DateTime  @updatedAt
   @@map("user")
@@ -51,3 +53,27 @@ model Flashcard {
 
   @@map("flashcard")
 }
+
+model Quizz {
+  id Int @id @default(autoincrement())
+  type String
+  question String
+  category String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  quizzOption QuizzOptions[]
+  answer String?
+  next_review_at DateTime? @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model QuizzOptions {
+  id Int @id @default(autoincrement())
+  quizz Quizz? @relation(fields: [quizzId], references: [id], onDelete: Cascade)
+  quizzId Int?
+  opt String
+  isCorrect Boolean
+  isSelected Boolean
+}
+

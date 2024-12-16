@@ -3,7 +3,7 @@ import db from "@/prisma/prisma"
 import { Video } from "@prisma/client"
 
 export async function fetchVideo(data: {userId: number}){
-    
+    console.log(data)
     
     if(!data) return {
         success: false,

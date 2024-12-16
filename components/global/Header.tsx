@@ -4,9 +4,23 @@ import { Button } from "@/components/ui/button";
 import { NewVideo } from "@/app/(page)/(authorized)/playlist/_components/new-video-modal";
 import { usePathname } from "next/navigation";
 import { NewCard } from "@/app/(page)/(authorized)/play/[id]/_components/newCard";
-import { NewCardModal } from "@/app/(page)/(authorized)/flashcards/_components/NewCardModal";
+import { CardModal } from "@/app/(page)/(authorized)/flashcards/_components/card-modal";
+import { QuizzModal } from "@/app/(page)/(authorized)/exercise/_components/quizz-modal";
 
 
+
+const switchButton = (current: string) => {
+  switch (current) {
+    case "/flashcards":
+      return <CardModal />
+      break;
+    case "/exercise":
+      return <QuizzModal />
+    default:
+      return <NewVideo/>
+      break;
+  }
+}
 export default async function Header({
   newVideo,
   newCard
@@ -36,7 +50,7 @@ export default async function Header({
         <Button variant="ghost" size="icon">
           <Bell className="h-5 w-5" />
         </Button>
-        {pathname === "/flashcards" ? <NewCardModal /> :  <NewVideo/>}
+        {switchButton(pathname)}
         <Avatar className="h-8 w-8">
           <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=faces" alt="User" />
         </Avatar>

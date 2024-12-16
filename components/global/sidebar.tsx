@@ -1,6 +1,6 @@
 "use client";
 import cookies from "js-cookie";
-import { BarChart2, Users, FolderKanban, Users2, Library, Mail, Settings, Home, GalleryVerticalEnd, GalleryHorizontalEnd, LayoutDashboard, SquarePlay } from "lucide-react";
+import { BarChart2, Users, NotebookPen ,FolderKanban, Users2, Library, Mail, Settings, Home, GalleryVerticalEnd, GalleryHorizontalEnd, LayoutDashboard, SquarePlay } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -10,7 +10,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: SquarePlay, label: "Videos", href: "/playlist" },
   { icon: GalleryHorizontalEnd, label: "Flashcard", href: "/flashcards" },
-  { icon: Users2, label: "Teams", href: "/teams" },
+  { icon: NotebookPen, label: "Exercicios", href: "/exercise" },
   { icon: Library, label: "Library", href: "/library" },
   { icon: Mail, label: "Contacts", href: "/contacts" },
 ];
