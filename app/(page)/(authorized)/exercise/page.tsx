@@ -1,3 +1,4 @@
+'use server'
 import { v4 as uuid } from "uuid";
 import { ViewQuizz } from "./_components/view-quizz";
 import { getSession } from "@/lib/session";

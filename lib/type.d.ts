@@ -41,6 +41,29 @@ export interface ITag {
   label: string;
 }
 
+export type QChoiceOption = {
+  opt: string;
+  isCorrect: boolean;
+  isSelected: boolean;
+}
+
+export interface IQChoice {
+  id: string;
+  question: string;
+  type: string;
+  category: string;
+  options: QChoiceOption[]
+}
+
+export interface IQField {
+  id: string;
+  question: string;
+  type: string;
+  category: string;
+  answer: string;
+}
+
+
 export interface IReasonProps { sei: boolean; naoSei: boolean}
 
 export interface ICard { front: string, back: string}

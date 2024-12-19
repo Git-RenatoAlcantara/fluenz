@@ -22,6 +22,34 @@ export async function fetchQuizz(){
             }
         }
 
+    
+        const user  = await db.user.findUnique({
+            where: {
+                id: parseInt(session.userId)
+            },
+            include: {
+                quizz: {
+                  where: {
+                    OR: [
+                        {
+                            reviewAt: {
+                                lte: new Date()
+                            }
+                        },
+                        {
+                            reviewAt: null
+                        }
+                    ]
+                  },
+                  include: {
+                    quizzOption: true
+                  }
+                }
+            }
+        })
+        
+
+        /*
         const user  = await db.user.findUnique({
             where: {
                 id: parseInt(session.userId)
@@ -34,6 +62,7 @@ export async function fetchQuizz(){
                 }
             }
         })
+        */
 
         if(!user){
             return {
@@ -43,7 +72,7 @@ export async function fetchQuizz(){
         }
         
         const {quizz} = user;
-
+        console.log(quizz)
        return {
            success: true,
             quizz: quizz.map((q: { id: number; question: string; type: string; answer: string | null; quizzOption: quizzOption | [] }) => ({

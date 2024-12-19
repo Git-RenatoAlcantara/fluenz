@@ -19,26 +19,43 @@ export async function saveExercise(data: any){
             }
         }
 
-        await db.quizz.create({
-            data: {
-                question: data.question,
-                type: data.type,
-                category: data.category,
-                user: {
-                    connect: {
-                        id: parseInt(session.userId)
+        if(data.type === "multiple"){
+            await db.quizz.create({
+                data: {
+                    question: data.question,
+                    type: data.type,
+                    category: data.category,
+                    user: {
+                        connect: {
+                            id: parseInt(session.userId)
+                        }
+                    },
+                    quizzOption: {
+                        create: data.options.map((item: { opt: string; isCorrect: boolean; isSelected: boolean }) => ({
+                            opt: item.opt,
+                            isCorrect: item.isCorrect,
+                            isSelected: item.isSelected,
+                        })),
                     }
-                },
-                quizzOption: {
-                    create: data.options.map((item: { opt: string; isCorrect: boolean; isSelected: boolean }) => ({
-                        opt: item.opt,
-                        isCorrect: item.isCorrect,
-                        isSelected: item.isSelected,
-                    })),
                 }
-            }
-        })
-
+            })
+        }else {
+            await db.quizz.create({
+                data: {
+                    question: data.question,
+                    type: data.type,
+                    category: data.category,
+                    answer: data.answer,
+                    user: {
+                        connect: {
+                            id: parseInt(session.userId)
+                        }
+                    },
+                    
+                }
+            })
+        }
+        
         return {
             status: true
         }

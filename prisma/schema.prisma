@@ -63,7 +63,7 @@ model Quizz {
   userId Int
   quizzOption QuizzOptions[]
   answer String?
-  next_review_at DateTime? @default(now())
+  reviewAt DateTime? @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime  @updatedAt
 }

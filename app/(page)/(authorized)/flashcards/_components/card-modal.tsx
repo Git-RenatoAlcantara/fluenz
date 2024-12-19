@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import React, { FormEventHandler, useState } from "react"
 import { saveCard } from "../_actions/saveCard"
 import { useToast } from "@/hooks/use-toast"
+import { Plus } from "lucide-react"
 
 
 export const CardModal = () => {
@@ -39,8 +40,8 @@ export const CardModal = () => {
 
     return (
         <Dialog>
-        <DialogTrigger className="dark:bg-[#9b5de5] dark:hover:bg-secondery/90  px-5 rounded h-10">
-          Novo Cartão
+        <DialogTrigger className="flex uppercase gap-1 items-center bg-blue-500/20 px-5 rounded h-10">
+        card <Plus /> 
         </DialogTrigger>
             <DialogContent>
                   <form  onSubmit={onSubmit}>

@@ -18,6 +18,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const  randomBetween = (min: number, max: number) => {  
+  return Math.floor(
+    Math.random() * (max - min) + min
+  )
+}
+
  // Função para formatar o tempo do vídeo
  export const formatVideoTime = (timeInSeconds: number): string => {
   const hours = Math.floor(timeInSeconds / 3600);
