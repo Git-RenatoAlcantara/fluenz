@@ -138,6 +138,9 @@ export const ViewQuizz = () => {
                             key={initialState[currentPositionQuizz].id}
                             quizz={initialState[currentPositionQuizz]}
                             quizzPosition={currentPositionQuizz}
+                            showAnswer={showAnswer}
+                            setAnswerInput={setAnswerInput}
+                            answerInput={answerInput}
                         />
                     ) : (
                         <div>Tipo de quiz desconhecido: {initialState[currentPositionQuizz].type}</div>
