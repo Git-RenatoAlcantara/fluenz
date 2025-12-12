@@ -4,12 +4,8 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { createSession, deleteSession } from "@/lib/session";
 import { LoginSchema, RegistrationData } from "@/lib/schemas";
-
-const testUser = {
-  id: "1",
-  email: "renatoalcantara2022@gmail.com",
-  password: "12345678",
-};
+import bcrypt from "bcrypt";
+import db from "@/prisma/prisma";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }).trim(),
@@ -31,7 +27,15 @@ export async function login(prevState: any, formData: FormData) {
 
   const { email, password } = result.data;
 
-  if (email !== testUser.email || password !== testUser.password) {
+  // Buscar usuário no banco de dados
+  const user = await db.user.findFirst({
+    where: {
+      email
+    }
+  });
+
+  // Verificar se o usuário existe e se a senha está correta
+  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
     return {
       errors: {
         email: ["Invalid email or password"],
@@ -39,9 +43,9 @@ export async function login(prevState: any, formData: FormData) {
     };
   }
 
-  await createSession(testUser.id);
+  await createSession(String(user.id));
 
-  redirect("/playlist");
+  redirect("/dashboard");
 }
 
 export async function logout() {

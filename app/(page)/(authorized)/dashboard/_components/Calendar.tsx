@@ -11,21 +11,20 @@ export default function Calendar(){
     const [view, setView] = useState<CalendarViewType>('Month');
     
     return (
-        <div className="shadow-lg p-6">
-        <CalendarHeader 
-            currentDate={currentDate}
-            view={view}
-            onViewChange={setView}
-            onDateChange={setCurrentDate}
-        />
         <div className="w-full">
-            <CalendarHeaderGrid />
-            <CalendarDayGrid 
+            <CalendarHeader 
                 currentDate={currentDate}
                 view={view}
+                onViewChange={setView}
+                onDateChange={setCurrentDate}
             />
+            <div className="w-full mt-6">
+                <CalendarHeaderGrid />
+                <CalendarDayGrid 
+                    currentDate={currentDate}
+                    view={view}
+                />
+            </div>
         </div>
-            
-    </div>
     )
 }

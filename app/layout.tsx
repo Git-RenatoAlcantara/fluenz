@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "./providers/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster"
+import { Toaster as Sonner } from "sonner"
 
 
 const geistSans = localFont({
@@ -41,6 +42,7 @@ export default function RootLayout({
           >
             {children}
             <Toaster />
+            <Sonner theme="dark" />
           </ThemeProvider>
       </body>
     </html>

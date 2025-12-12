@@ -7,7 +7,7 @@ const queryClient = new QueryClient()
 export default function Dashboard(){
     return (
       <QueryClientProvider client={queryClient}>
-      <div className="w-full">
+      <div className="w-full h-full overflow-auto">
          <DashboardClient />
       </div>
       </QueryClientProvider>

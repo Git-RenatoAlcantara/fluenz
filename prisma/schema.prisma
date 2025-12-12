@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
 }
 
 
@@ -20,20 +20,61 @@ model User {
   email   String   @unique
   name    String?
   password_hash String
+  xp      Int      @default(0)
+  level   Int      @default(1)
+  streak  Int      @default(0)
+  lastStudyDate String?
+  manaDaily Int    @default(0) // Minutos assistidos hoje
+  gems    Int      @default(0) // Moeda premium
+  currentTitle String @default("Novice Listener")
+  streakMultiplier Float @default(1.0)
+  badges  String[] @default([]) // Array de badges desbloqueados
+  activeEffects Json? // { "xpBoostExpiresAt": "ISO date", "streakFreeze": true }
   videos Video[]
   flashcard Flashcard[]
   quizz Quizz[]
+  playlists Playlist[]
+  dailyStats DailyStats[]
+  skillTree SkillTree?
+  inventory UserItem[]
+  bossBattles BossBattle[]
+  guild Guild? @relation("GuildMembers", fields: [guildId], references: [id])
+  guildId Int?
+  ownedGuild Guild? @relation("GuildOwner")
   createdAt DateTime @default(now())
   updatedAt DateTime  @updatedAt
   @@map("user")
 }
 
+model Playlist {
+  id Int @id @default(autoincrement())
+  name String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  videos Video[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("playlist")
+}
+
 model Video {
   id Int @id @default(autoincrement())
-  url String @unique
-  user User @relation(fields: [userId], references: [id])
+  url String
+  title String?
+  type String @default("youtube") // "youtube" or "local"
+  duration Int? // Duração em segundos
+  category String? // "grammar", "listening", "movies", "news"
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int 
+  playlist Playlist? @relation(fields: [playlistId], references: [id], onDelete: SetNull)
+  playlistId Int?
   last_view_at String?
+  // Repetição Espaçada (Spaced Repetition - SM2 Algorithm)
+  repetitionInterval Int? @default(0) // Intervalo em dias até próxima revisão
+  repetitionEase Float? @default(2.5) // Facilidade (ease factor) - SM2
+  nextReviewDate DateTime? // Data da próxima revisão
+  reviewCount Int? @default(0) // Número de vezes que foi revisado
   createdAt DateTime @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -77,3 +118,122 @@ model QuizzOptions {
   isSelected Boolean
 }
 
+model DailyStats {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  date String // Formato: YYYY-MM-DD
+  totalWatchTime Int @default(0) // Tempo em segundos
+  videosWatched Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@map("daily_stats")
+}
+
+// Sistema de Skill Tree (Árvore de Habilidades)
+model SkillTree {
+  id        Int  @id @default(autoincrement())
+  userId    Int  @unique
+  intellect Int  @default(0) // Grammar/Aulas
+  charisma  Int  @default(0) // Podcasts/Conversa
+  perception Int @default(0) // Filmes/Séries
+  wisdom    Int  @default(0) // Notícias/Tech
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("skill_tree")
+}
+
+// Sistema de Itens e Loja
+model Item {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  type        String   // 'potion', 'cosmetic', 'artifact'
+  cost        Int      // Preço em Gems
+  effectType  String?  // 'xp_boost', 'streak_freeze', 'quest_reroll'
+  effectValue Float?   // Valor do efeito (ex: 2.0 para double XP)
+  duration    Int?     // Duração em minutos (se aplicável)
+  icon        String?  // Emoji ou nome do ícone
+  users       UserItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("item")
+}
+
+model UserItem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  itemId    Int
+  quantity  Int      @default(1)
+  active    Boolean  @default(false) // Se o item está ativo
+  expiresAt DateTime? // Quando o efeito expira
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_item")
+}
+
+// Sistema de Boss Battles (Batalhas de Validação)
+model BossBattle {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  level     Int      // Nível que desbloqueou este boss (5, 10, 15...)
+  status    String   @default("PENDING") // 'PENDING', 'VICTORY', 'DEFEAT'
+  questions Json     // Array de perguntas geradas por IA
+  answers   Json?    // Respostas do usuário
+  rewards   Json?    // Recompensas ganhas (XP, items, etc)
+  attempts  Int      @default(0) // Número de tentativas
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("boss_battle")
+}
+
+// Sistema de Guildas (Social/Accountability)
+model Guild {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  icon        String?  @default("🏰")
+  ownerId     Int
+  maxMembers  Int      @default(10)
+  weeklyGoal  Int      @default(1000) // Minutos totais de estudo semanal
+  currentWeekMinutes Int @default(0)
+  weekStartDate String? // Data de início da semana (YYYY-MM-DD)
+  totalGems   Int      @default(0) // Gems ganhas pela guilda
+  owner       User     @relation("GuildOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     User[]   @relation("GuildMembers")
+  quests      GuildQuest[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([ownerId])
+  @@map("guild")
+}
+
+// Missões de Guilda
+model GuildQuest {
+  id          Int      @id @default(autoincrement())
+  guildId     Int
+  title       String
+  description String
+  goal        Int      // Meta em minutos
+  progress    Int      @default(0)
+  reward      Int      // Gems de recompensa
+  status      String   @default("ACTIVE") // 'ACTIVE', 'COMPLETED', 'FAILED'
+  startDate   DateTime @default(now())
+  endDate     DateTime
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("guild_quest")
+}

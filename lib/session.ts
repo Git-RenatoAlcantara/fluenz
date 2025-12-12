@@ -41,15 +41,20 @@ export async function decrypt(session: string | undefined = "") {
     });
     return payload;
   } catch (error) {
-    console.log("Failed to verify session");
+    // Sessão inválida ou inexistente - comportamento normal para usuários não autenticados
+    return null;
   }
 }
 
 export async function getSession(): Promise<{userId: string | undefined, expiresAt: string | undefined}>{
   const cookie = cookies().get("session")?.value;
   const session = await decrypt(cookie);
+  
+  // Fallback para o cookie userId se o JWT falhar
+  const userId = session?.userId as string || cookies().get("userId")?.value;
+  
   return {
-    userId: session?.userId as string,
+    userId: userId,
     expiresAt: session?.expiresAt as string
   }
 }

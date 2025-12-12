@@ -17,7 +17,7 @@ export default function CalendarDay({ date, isCurrentMonth }: CalendarDayProps) 
   const userId: string = cookies.get("userId") || "";
 
   if (!date) {
-    return <div className="h-32 bg-muted/5 rounded-lg" />;
+    return <div className="min-h-[120px] h-32 bg-muted/5 rounded-lg" />;
   }
 
   const fetchDataOptions = {
@@ -47,7 +47,7 @@ export default function CalendarDay({ date, isCurrentMonth }: CalendarDayProps) 
 
   return (
     <div
-      className={`h-32 p-2 rounded-lg border transition-colors ${
+      className={`min-h-[120px] h-32 p-2 rounded-lg border transition-colors ${
         isCurrentMonth ? 'bg-card' : 'bg-muted/5'
       }`}
     >

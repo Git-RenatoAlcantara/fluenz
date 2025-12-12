@@ -1,12 +1,11 @@
 'use client'
 
-import Header from "@/components/global/Header"
 import Sidebar from "@/components/global/sidebar"
+import RPGHeader from "@/components/global/RPGHeader"
+import { ActiveEffectsHUD } from "@/components/global/ActiveEffectsHUD"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { usePathname } from 'next/navigation'
 import React from "react"
 
-const pathPlayRegex = /\/play\/[0-9]/
 const queryClient = new QueryClient()
 
 export default function LayoutClient({
@@ -14,16 +13,17 @@ export default function LayoutClient({
 }: {
     children: React.ReactNode
 }){
-
-    const pathname = usePathname()
     
     return (
         <QueryClientProvider client={queryClient}>
-            <div className="flex h-screen">
-            <Sidebar />
-                <div className="w-full h-full">
-                    {pathname.match(pathPlayRegex)?.pop() ? "" : <Header newVideo/> }
-                    {children}
+            <div className="min-h-screen bg-slate-950 flex flex-col">
+                <RPGHeader />
+                <ActiveEffectsHUD />
+                <div className="flex flex-1 overflow-hidden">
+                    <Sidebar />
+                    <main className="flex-1 overflow-y-auto">
+                        {children}
+                    </main>
                 </div>
             </div>
         </QueryClientProvider>

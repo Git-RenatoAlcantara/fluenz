@@ -1,57 +1,68 @@
 "use client";
-import cookies from "js-cookie";
-import { BarChart2, Users, NotebookPen ,FolderKanban, Users2, Library, Mail, Settings, Home, GalleryVerticalEnd, GalleryHorizontalEnd, LayoutDashboard, SquarePlay } from "lucide-react";
+import { Play, Layout, History, ShoppingBag, Target, Skull, Users, Brain } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { usePathname } from 'next/navigation'
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: SquarePlay, label: "Videos", href: "/playlist" },
-  { icon: GalleryHorizontalEnd, label: "Flashcard", href: "/flashcards" },
-  { icon: NotebookPen, label: "Exercicios", href: "/exercise" },
-  { icon: Library, label: "Library", href: "/library" },
-  { icon: Mail, label: "Contacts", href: "/contacts" },
+  { icon: Play, label: "Daily Mix", href: "/daily" },
+  { icon: Layout, label: "Biblioteca", href: "/playlist" },
+  { icon: Brain, label: "Revisão", href: "/review" },
+  { icon: Target, label: "Skills", href: "/skills" },
+  { icon: Skull, label: "Boss", href: "/boss" },
+  { icon: Users, label: "Guild", href: "/guild" },
+  { icon: ShoppingBag, label: "Loja", href: "/shop" },
+  { icon: History, label: "Histórico", href: "/history" },
 ];
 
 export default function Sidebar() {
-
-  const userId = cookies.get("userId");
-  
   const pathname = usePathname()
-  const [active, setActive] = useState(pathname);
 
   return (
-    <div className="w-20 bg-[#141517] h-full flex flex-col items-center py-4 border-r border-gray-800">
-      <div className="mb-8">
-        <span className="text-blue-500 font-bold">SOY</span>
-      </div>
-      
-      <nav className="flex-1 space-y-4">
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden sm:flex w-20 flex-col items-center py-8 gap-6 bg-slate-950 border-r border-slate-800">
         {menuItems.map((item) => {
           const Icon = item.icon;
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center justify-center w-12 h-12 rounded-lg transition-colors",
-                active === item.href ? "bg-blue-500/20 text-blue-500" : "text-gray-400 hover:text-white hover:bg-gray-800"
+                "p-3 rounded-xl transition-all",
+                isActive 
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" 
+                  : "text-slate-400 hover:bg-slate-800"
               )}
-              onClick={() => setActive(item.href)}
+              title={item.label}
             >
-              <Icon size={20} />
+              <Icon size={24} fill={isActive ? "currentColor" : "none"} />
             </Link>
           );
         })}
-      </nav>
+      </aside>
 
-      <div className="mt-auto">
-        <button className="flex items-center justify-center w-12 h-12 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
-          <Settings size={20} />
-        </button>
+      {/* Mobile Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 px-6 py-3 flex justify-around items-center z-40 sm:hidden shadow-lg">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex flex-col items-center gap-1 transition-colors",
+                isActive ? "text-indigo-500" : "text-slate-400"
+              )}
+            >
+              <Icon size={22} fill={isActive ? "currentColor" : "none"} />
+              <span className="text-[10px] font-medium">{item.label.split(' ')[0]}</span>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </>
   );
 }

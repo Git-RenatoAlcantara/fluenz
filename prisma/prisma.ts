@@ -14,7 +14,9 @@ declare global {
  * Se globalThis.prisma já estiver definido (ou seja, se já houver uma instância do PrismaClient), ela será reutilizada. 
  * Caso contrário, uma nova instância será criada.
  */
-const client = globalThis.prisma || new PrismaClient()
+const client = globalThis.prisma || new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+})
 
 
 /**

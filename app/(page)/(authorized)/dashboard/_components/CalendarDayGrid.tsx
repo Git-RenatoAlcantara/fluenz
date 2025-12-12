@@ -22,16 +22,14 @@ export default function CalendarDayGrid({ currentDate, view }: CalendarGridProps
   const daysWithPadding = Array(startingDayIndex).fill(null).concat(days);
 
   return (
-    <ScrollArea className='h-[530px]'>
-      <div className="grid grid-cols-7 gap-1">
-        {daysWithPadding.map((day, index) => (
-            <CalendarDay
-            key={index}
-            date={day}
-            isCurrentMonth={day ? isSameMonth(day, currentDate) : false}
-            />
-        ))}
-      </div>
-    </ScrollArea>
+    <div className="grid grid-cols-7 gap-1 auto-rows-fr">
+      {daysWithPadding.map((day, index) => (
+          <CalendarDay
+          key={index}
+          date={day}
+          isCurrentMonth={day ? isSameMonth(day, currentDate) : false}
+          />
+      ))}
+    </div>
   );
 }

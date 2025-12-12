@@ -7,7 +7,7 @@ import PageClient from "./pageClient";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 
-export default async function Playlist(){
+export default function Playlist(){
    
   return (
     <PageClient/>

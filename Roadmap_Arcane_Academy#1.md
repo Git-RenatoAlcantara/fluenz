@@ -1,0 +1,148 @@
+🗺️ Roadmap de Evolução: Arcane Academy
+
+Este documento propõe expansões para o sistema base do Arcane Academy, transformando o "tracking passivo" em "aprendizado ativo" e criando uma economia vibrante para as Gems.
+
+1. ⚔️ Mecânica de "Boss Battles" (Aprendizado Ativo)
+
+O Problema Atual: O sistema recompensa apenas assistir. O usuário pode dar play e sair da sala.
+A Solução: Implementar desafios de validação (Quizzes) temáticos.
+
+O Conceito
+
+A cada 5 Níveis ou ao completar uma Playlist Temática, o usuário enfrenta um "Boss".
+
+O Boss: Um Quiz de 5 perguntas geradas por IA (pode usar a API do Gemini/OpenAI) baseadas nas legendas dos últimos vídeos assistidos.
+
+A Batalha:
+
+Acertar uma questão = Dano no Boss.
+
+Errar = Perde HP (Mana).
+
+Loot (Recompensa):
+
+Grande quantidade de XP.
+
+Artifacts: Itens únicos (ex: "Pena da Sabedoria" - +5% XP permanente em vídeos de gramática).
+
+Título Especial (ex: "Slayer of Verbs").
+
+2. 🌳 Árvore de Habilidades (Skill Tree)
+
+O Problema Atual: Nível único e genérico. Um usuário pode ser nível 50 só assistindo desenhos infantis.
+A Solução: Diferenciar tipos de conteúdo através de Tags RPG.
+
+As Classes de Estudo
+
+Ao cadastrar um vídeo, o usuário (ou uma IA) define a tag principal, que alimenta uma "Mastery" específica:
+
+Tag do Vídeo
+
+Atributo RPG
+
+Classe Beneficiada
+
+Gramática/Aulas
+
+Intelecto
+
+Scholar (Escriba)
+
+Podcasts/Conversa
+
+Carisma
+
+Bard (Bardo)
+
+Filmes/Séries
+
+Percepção
+
+Ranger (Patrulheiro)
+
+Notícias/Tech
+
+Sabedoria
+
+Mage (Mago)
+
+Visualização: Um gráfico de radar (spider chart) no perfil mostrando qual "classe" o usuário está desenvolvendo mais.
+
+3. 💎 Economia de Gems (A Loja do Alquimista)
+
+O Problema Atual: As Gems acumulam sem uso claro além de cosméticos futuros.
+A Solução: Itens consumíveis que afetam o gameplay.
+
+Catálogo da Loja
+
+Poções (Consumíveis):
+
+🧪 Potion of Clarity (Double XP): Dobra o XP pelos próximos 30 minutos. Custo: 5 Gems.
+
+🧊 Streak Freeze (Cryo Crystal): Protege o streak se você faltar um dia. Custo: 10 Gems.
+
+📜 Quest Reroll Scroll: Troca uma missão diária difícil por outra aleatória. Custo: 2 Gems.
+
+Cosméticos de Interface:
+
+Temas de UI: "Dark Necromancer", "High Elf Gold", "Cyberpunk Neon".
+
+Bordas de Avatar: Molduras animadas para o perfil.
+
+4. 🏰 Sistema de Guildas (Social)
+
+O Problema Atual: Jornada solitária.
+A Solução: Grupos pequenos focados em responsabilidade mútua (Accountability).
+
+Formação: Guildas de até 10 pessoas.
+
+Guild Quest: "Se a guilda somar 1000 minutos de estudo esta semana, todos ganham 5 Gems."
+
+Buffs de Guilda: Se todos os membros estudarem hoje, todos ganham +10% XP amanhã.
+
+5. 🤖 Integração Técnica Sugerida (IA + YouTube)
+
+Para automatizar a experiência e reduzir o atrito manual:
+
+Metadata Fetching Automático:
+
+Ao colar o link do YouTube, usar a API youtube-dl-exec (ou API oficial) no backend para puxar: Título, Thumbnail, Duração exata e Legendas (CC).
+
+Geração de Tags com IA:
+
+Passar a descrição/título para uma LLM classificar automaticamente: "Este vídeo é de Gramática ou Listening?" -> Atribui a Tag RPG.
+
+Resumo Mágico:
+
+Botão "Gerar Grimório": Cria um resumo em tópicos (bullet points) do vídeo assistido para salvar nas notas do usuário.
+
+📋 Resumo das Novas Tabelas (Prisma Schema Update)
+
+Para suportar essas melhorias, você precisaria expandir seu schema atual:
+
+model Item {
+  id          Int      @id @default(autoincrement())
+  name        String
+  type        String   // 'potion', 'skin', 'artifact'
+  cost        Int
+  effect      Json     // { "type": "xp_boost", "value": 2.0, "duration": 30 }
+  users       UserItem[]
+}
+
+model UserItem {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  itemId    Int
+  quantity  Int     @default(1)
+  user      User    @relation(fields: [userId], references: [id])
+  item      Item    @relation(fields: [itemId], references: [id])
+}
+
+model SkillTree {
+  userId    Int     @unique
+  intellect Int     @default(0) // Grammar
+  charisma  Int     @default(0) // Speaking/Listening
+  perception Int    @default(0) // Movies/Series
+  wisdom    Int     @default(0) // News/Doc
+  user      User    @relation(fields: [userId], references: [id])
+}
